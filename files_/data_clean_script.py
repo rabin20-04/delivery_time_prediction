@@ -10,9 +10,10 @@ columns_to_drop =  ['rider_id',
                     'order_date',
                     "order_time_hour",
                     "order_day",
-                    "city_name",
-                    "order_day_of_week",
-                    "order_month"]
+                    # "city_name",
+                    # "order_day_of_week",
+                    # "order_month"
+                    ]
 
 
 def change_column_names(data: pd.DataFrame):
