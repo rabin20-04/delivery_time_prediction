@@ -4,6 +4,9 @@
     <img src="https://img.shields.io/badge/CCDS-Project%20template-328F97?logo=cookiecutter" />
 </a> -->
 
+
+worked on virtual conda environment d_timepred_env
+
 Ml project that predicts food delivery time in minutes
 
 ## Project Organization
