@@ -102,7 +102,7 @@ def data_cleaning(data: pd.DataFrame):
                                     .str.replace("(min) ","")
                                     .astype(int)))
     
-         .drop(columns=["order_time","order_picked_time"]))
+         .drop(columns=["order_time","order_picked_time","city_name", "order_day_of_week", "order_month"]))
     
     
     
