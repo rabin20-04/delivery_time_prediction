@@ -125,7 +125,7 @@ def clean_lat_long(data: pd.DataFrame, threshold: float = 1.0) -> pd.DataFrame:
 
     return data.assign(
         **{
-            col: (np.where(data[col] < threshold, np.nan, data[col].values))
+            col: (np.where(data[col] < threshold, np.nan, data[col].values)) # type: ignore
             for col in location_columns
         }
     )
