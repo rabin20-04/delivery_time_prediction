@@ -26,6 +26,7 @@ handler.setFormatter(formatter)
 def load_data(data_path: Path) -> pd.DataFrame:
     try:
         df = pd.read_csv(data_path)
+        print(df.shape)
     
     except FileNotFoundError:
         logger.error("The file to load does not exist")
@@ -48,6 +49,7 @@ def read_params(file_path):
     return params_file
         
 def save_data(data: pd.DataFrame, save_path: Path) -> None:
+    print(data.shape)
     data.to_csv(save_path, index=False)
     
     
