@@ -186,3 +186,4 @@ cython_debug/
 .pypirc
 
 filEs
+/run_information.json
