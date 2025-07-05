@@ -151,7 +151,7 @@ async def perform_prediction(data: Data):
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://deliverytimeprediction-2r2xwb66xapjc4ywf5f3cq.streamlit.app", "https://*.streamlit.app"],
+    allow_origins=["https://deliverytimeprediction-2r2xwb66xapjc4ywf5f3cq.streamlit.app", "https://*.streamlit.app","http://localhost:8501"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -163,6 +163,5 @@ if __name__ == "__main__":
         app="app:app",
         host="0.0.0.0",
         port=int(os.getenv("PORT", 8000)),
-        reload=True,
-        reload_dirs=["app.py"],
+      
     )
