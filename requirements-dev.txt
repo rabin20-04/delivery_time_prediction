@@ -15,4 +15,4 @@ lightgbm
 fastapi
 pydantic
 uvicorn
-
+streamlit
