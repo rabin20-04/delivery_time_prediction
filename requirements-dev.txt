@@ -1,11 +1,11 @@
 numpy
 pandas
-missingno
-plotly
+# missingno
+# plotly
 python-dotenv
-ruff
-matplotlib
-seaborn 
+# ruff
+# matplotlib
+# seaborn 
 scikit-learn
 mlflow
 dagshub

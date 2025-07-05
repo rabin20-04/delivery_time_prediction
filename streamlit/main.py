@@ -1,22 +1,25 @@
 import streamlit as st
 import requests
 import pandas as pd
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+API_URL = os.getenv("API_URL")
 
 st.title("Delivery Time Prediction")
 
-# Define options for categorical variables
-weather_options = ["sunny", "Cloudy", "Fog", "Rainy", "Stormy", "Windy"]
-traffic_options = ["low", "Medium", "High", "Jam"]
+weather_options = ["SUNNY", "CLOUDY", "FOG", "RAINY", "STORMY", "WINDY"]
+traffic_options = ["LOW", "MEDIUM", "HIGH", "JAM"]
 vehicle_condition_options = [0, 1, 2, 3]
-type_of_order_options = ["snack", "Meal", "Drinks", "Buffet"]
-type_of_vehicle_options = ["motorcycle", "scooter", "electric_scooter", "bicycle"]
-festival_options = ["no", "Yes"]
-city_type_options = ["urban", "Metropolitan", "Semi-Urban"]
+type_of_order_options = ["SNACK", "MEAL", "DRINKS", "BUFFET"]
+type_of_vehicle_options = ["MOTORCYCLE", "SCOOTER", "ELECTRIC_SCOOTER", "BICYCLE"]
+festival_options = ["NO", "YES"]
+city_type_options = ["URBAN", "METROPOLITAN", "SEMI-URBAN"]
 is_weekend_options = [0, 1]
-order_time_of_day_options = ["morning", "Afternoon", "Evening", "Night"]
-distance_type_options = ["short", "Medium", "Long"]
+order_time_of_day_options = ["MORNING", "AFTERNOON", "EVENING", "NIGHT"]
+distance_type_options = ["SHORT", "MEDIUM", "LONG"]
 
-# Create input fields
 with st.form("prediction_form"):
     age = st.number_input("Delivery Person Age", min_value=18.0, max_value=60.0, value=30.0, step=1.0)
     ratings = st.number_input("Delivery Person Ratings", min_value=0.0, max_value=5.0, value=4.0, step=0.1)
@@ -34,37 +37,30 @@ with st.form("prediction_form"):
     order_time_of_day = st.selectbox("Order Time of Day", order_time_of_day_options)
     distance_type = st.selectbox("Distance Type", distance_type_options)
 
-    # Submit button
     submitted = st.form_submit_button("Predict Delivery Time")
 
-# Handle form submission
 if submitted:
-    # Prepare data for API
     data = {
         "age": age,
         "ratings": ratings,
         "pickup_time_minutes": pickup_time_minutes,
-        "weather": weather,
-        "traffic": traffic,
+        "weather": weather.lower(),
+        "traffic": traffic.lower(),
         "vehicle_condition": vehicle_condition,
-        "type_of_order": type_of_order,
-        "type_of_vehicle": type_of_vehicle,
+        "type_of_order": type_of_order.lower(),
+        "type_of_vehicle": type_of_vehicle.lower(),
         "multiple_deliveries": multiple_deliveries,
-        "festival": festival,
-        "city_type": city_type,
+        "festival": festival.lower(),
+        "city_type": city_type.lower(),
         "distance": distance,
         "is_weekend": is_weekend,
-        "order_time_of_day": order_time_of_day,
-        "distance_type": distance_type
+        "order_time_of_day": order_time_of_day.lower(),
+        "distance_type": distance_type.lower()
     }
-
-    # Send request to FastAPI endpoint
     try:
-        response = requests.post("http://localhost:8000/predict", json=data)
-        if response.status_code == 200:
-            prediction = response.json()
-            st.success(f"Predicted Delivery Time: {prediction:.2f} minutes")
-        else:
-            st.error(f"Error: {response.status_code} - {response.text}")
+        response = requests.post(f"{API_URL}/predict", json=data, timeout=30)
+        response.raise_for_status()  # Raise exception for bad status codes
+        prediction = response.json()
+        st.success(f"Predicted Delivery Time: {prediction:.2f} minutes")
     except requests.exceptions.RequestException as e:
-        st.error(f"Failed to connect to the API: {e}")
+        st.error(f"Failed to connect to the API: {e}. The backend may be starting up.")

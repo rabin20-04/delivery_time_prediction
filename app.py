@@ -7,10 +7,15 @@ import numpy as np
 import mlflow
 import json
 import joblib
+import os
+from dotenv import load_dotenv
 from mlflow import MlflowClient
 from sklearn import set_config
 from scripts.data_cleaning_script import perform_data_cleaning
+from fastapi.middleware.cors import CORSMiddleware
+from functools import lru_cache
 
+load_dotenv()
 set_config(transform_output="pandas")
 
 import dagshub
@@ -18,9 +23,7 @@ import mlflow.client
 
 dagshub.init(repo_owner="rabin20-04", repo_name="delivery_time_prediction", mlflow=True)  # type: ignore
 
-mlflow.set_tracking_uri(
-    "https://dagshub.com/rabin20-04/delivery_time_prediction.mlflow"
-)
+mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI"))  # type: ignore
 
 
 class Data(BaseModel):
@@ -77,38 +80,37 @@ nominal_cat_cols = [
 ordinal_cat_cols = ["traffic", "distance_type"]
 
 
-client = MlflowClient()
+@lru_cache(maxsize=1)
+def load_model_and_preprocessor():
+    client = MlflowClient()
+    run_info = json.load(open("run_information.json"))
+    model_name = run_info["model_name"]
+    stage = "Staging"
+    latest_model_ver = client.get_latest_versions(name=model_name, stages=[stage])[
+        0
+    ].version
+    print(f"Latest model in production is version {latest_model_ver}")
 
-model_name = load_model_information("run_information.json")["model_name"]
+    model = mlflow.sklearn.load_model(f"models:/{model_name}/{stage}")
+    preprocessor = joblib.load("models/preprocessor.joblib")
+    model_pipe = Pipeline(steps=[("preprocess", preprocessor), ("regressor", model)])
+    return model_pipe
 
-stage = "Staging"
-
-# get the latest model version
-latest_model_ver = client.get_latest_versions(name=model_name, stages=[stage])
-print(f"Latest model in production is version {latest_model_ver[0].version}")
-
-
-model_path = f"models:/{model_name}/{stage}"
-
-model = mlflow.sklearn.load_model(model_path)
-
-preprocessor_path = "models/preprocessor.joblib"
-preprocessor = load_transformer(preprocessor_path)
-
-
-model_pipe = Pipeline(steps=[("preprocess", preprocessor), ("regressor", model)])
 
 app = FastAPI()
 
+# Load model and preprocessor once at startup
+model_pipe = load_model_and_preprocessor()
+
 
 @app.get(path="/")
-def home():
+async def home():
     return " Welcome to the Delivery time Precition App"
 
 
 # predict endpoint
 @app.post(path="/predict")
-def perform_prediction(data: Data):
+async def perform_prediction(data: Data):
     pred_data = pd.DataFrame(
         {
             # "ID": data.ID,
@@ -145,12 +147,21 @@ def perform_prediction(data: Data):
     return predictions
 
 
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[os.getenv("STREAMLIT_API_URL", "https://*.streamlit.app"), "http://localhost:8500"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
 if __name__ == "__main__":
-    uvicorn.run(app="app:app", host="0.0.0.0", port=8000, reload=True,reload_dirs=["app.py"])
-
-
-
-
-
-
-
+    uvicorn.run(
+        app="app:app",
+        host="0.0.0.0",
+        port=int(os.getenv("PORT", 8000)),
+        reload=True,
+        reload_dirs=["app.py"],
+    )
