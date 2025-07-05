@@ -21,6 +21,7 @@ set_config(transform_output="pandas")
 import dagshub
 import mlflow.client
 
+dagshub.auth.add_app_token(token=os.getenv("DAGSHUB_USER_TOKEN"))
 dagshub.init(repo_owner="rabin20-04", repo_name="delivery_time_prediction", mlflow=True)  # type: ignore
 
 mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI"))  # type: ignore
@@ -150,7 +151,7 @@ async def perform_prediction(data: Data):
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[os.getenv("STREAMLIT_API_URL", "https://*.streamlit.app"), "http://localhost:8500"],
+    allow_origins=["https://deliverytimeprediction-2r2xwb66xapjc4ywf5f3cq.streamlit.app", "https://*.streamlit.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
