@@ -1,8 +1,8 @@
 import pandas as pd
 import joblib
 import logging
-import mlflow# type: ignore
-import dagshub# type: ignore
+import mlflow
+import dagshub
 from pathlib import Path
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import mean_absolute_error, r2_score
@@ -10,7 +10,7 @@ import json
 
 
 # dagshub init
-import dagshub # type: ignore
+import dagshub 
 
 dagshub.init(repo_owner="rabin20-04", repo_name="delivery_time_prediction", mlflow=True)
 
