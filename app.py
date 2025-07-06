@@ -18,13 +18,13 @@ from functools import lru_cache
 load_dotenv()
 set_config(transform_output="pandas")
 
-import dagshub
-import mlflow.client
+# import dagshub
+# import mlflow.client
 
-dagshub.auth.add_app_token(token=os.getenv("DAGSHUB_USER_TOKEN"))
-dagshub.init(repo_owner="rabin20-04", repo_name="delivery_time_prediction", mlflow=True)  # type: ignore
+# dagshub.auth.add_app_token(token=os.getenv("DAGSHUB_USER_TOKEN"))
+# dagshub.init(repo_owner="rabin20-04", repo_name="delivery_time_prediction", mlflow=True)  # type: ignore
 
-mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI"))  # type: ignore
+# mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI"))  # type: ignore
 
 
 class Data(BaseModel):
@@ -54,10 +54,10 @@ class Data(BaseModel):
     distance_type: str
 
 
-def load_model_information(file_path):
-    with open(file_path) as f:
-        run_info = json.load(f)
-    return run_info
+# def load_model_information(file_path):
+#     with open(file_path) as f:
+#         run_info = json.load(f)
+#     return run_info
 
 
 def load_transformer(transformer_path):
@@ -81,26 +81,21 @@ nominal_cat_cols = [
 ordinal_cat_cols = ["traffic", "distance_type"]
 
 
+
 @lru_cache(maxsize=1)
 def load_model_and_preprocessor():
-    client = MlflowClient()
-    run_info = json.load(open("run_information.json"))
-    model_name = run_info["model_name"]
-    stage = "Staging"
-    latest_model_ver = client.get_latest_versions(name=model_name, stages=[stage])[
-        0
-    ].version
-    print(f"Latest model in production is version {latest_model_ver}")
-
-    model = mlflow.sklearn.load_model(f"models:/{model_name}/{stage}")
-    preprocessor = joblib.load("models/preprocessor.joblib")
-    model_pipe = Pipeline(steps=[("preprocess", preprocessor), ("regressor", model)])
-    return model_pipe
-
+    try:
+        model = joblib.load("models/model.joblib")
+        preprocessor = joblib.load("models/preprocessor.joblib")
+        model_pipe = Pipeline(steps=[("preprocess", preprocessor), ("regressor", model)])
+        print("Loaded latest local model and preprocessor")
+        return model_pipe
+    except Exception as e:
+        print(f"Error loading model: {e}")
+        raise
 
 app = FastAPI()
 
-# Load model and preprocessor once at startup
 model_pipe = load_model_and_preprocessor()
 
 

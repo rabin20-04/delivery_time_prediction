@@ -298,3 +298,23 @@ def perform_prediction(data: Data):
 
 if __name__ == "__main__":
     uvicorn.run(app="app:app", host="0.0.0.0", port=8000, reload=True)
+
+
+
+
+# ...............
+@lru_cache(maxsize=1)
+def load_model_and_preprocessor():
+    client = MlflowClient()
+    run_info = json.load(open("run_information.json"))
+    model_name = run_info["model_name"]
+    stage = "Staging"
+    latest_model_ver = client.get_latest_versions(name=model_name, stages=[stage])[
+        0
+    ].version
+    print(f"Latest model in production is version {latest_model_ver}")
+
+    model = mlflow.sklearn.load_model(f"models:/{model_name}/{stage}")
+    preprocessor = joblib.load("models/preprocessor.joblib")
+    model_pipe = Pipeline(steps=[("preprocess", preprocessor), ("regressor", model)])
+    return model_pipe

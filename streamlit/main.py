@@ -9,7 +9,7 @@ API_URL = os.getenv("API_URL")
 
 st.title("Delivery Time Prediction")
 
-weather_options = ["SUNNY", "CLOUDY", "FOG", "RAINY", "STORMY", "WINDY"]
+weather_options = ["SUNNY", "CLOUDY","Sandstorms", "FOG",  "STORMY", "WINDY"]
 traffic_options = ["LOW", "MEDIUM", "HIGH", "JAM"]
 vehicle_condition_options = [0, 1, 2, 3]
 type_of_order_options = ["SNACK", "MEAL", "DRINKS", "BUFFET"]

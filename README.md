@@ -5,9 +5,7 @@
 </a> -->
 
 
-worked on virtual conda environment d_timepred_env
-
-Ml project that predicts food delivery time in minutes
+### Ml project that predicts food delivery time in minutes
 
 ## Project Organization
 
