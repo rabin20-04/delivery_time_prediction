@@ -28,9 +28,8 @@ is_weekend_options = ["Yes", "No"]
 order_time_of_day_options = ["MORNING", "AFTERNOON", "EVENING", "NIGHT"]
 distance_type_options = ["SHORT", "MEDIUM", "LONG"]
 
-# Sidebar navigation
 page = st.sidebar.radio("", ["Description", "Prediction"], index=1)
-
+st.divider()
 st.title("📦 Delivery Time Prediction App")
 # DESCRIPTION PAGE
 if page == "Description":
@@ -60,15 +59,27 @@ if page == "Description":
         2. **Final Touch:**
            - **Linear Regression:** Combines the strengths of both models for a precise, polished prediction.
 
-        These models work together in a **stacking regressor**, a method I chose after experimenting to balance speed and accuracy then Linear Regression as meta model. The result? Predictions you can count on, accurate within ±3 minutes.
+         The final model is a **Stacking Regressor** a method I chose after experimenting to balance speed and accuracy tuned through optuna, where the base models were Random Forest and LightGBM, and the meta-model is Linear Regression.
+
+          The result? Predictions you can count on, accurate within ±3 minutes.
 
        ---
 
        
-         **Thank you for checking out this project.**  
-        Feel free to explore the prediction page and see how everything works in action.  
+         :gray[**Thank you for checking out this project.**  
+        Feel free to explore the prediction page and see how everything works in action. ] 
+
+
         **Suggestions are always appreciated!**
-        """
+       <a href="https://www.linkedin.com/in/rabin-poudel-770842277/" target="_blank">            
+       <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" width="30" height="30">
+       </a>
+       <a href="https://github.com/rabin20-04/delivery_time_prediction" target="_blank">
+       <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" width="30" height="30">
+       </a>
+
+        """,
+        unsafe_allow_html=True,
     )
 
 # PREDICTION PAGE
@@ -127,9 +138,7 @@ else:
             st.divider()
             festival = st.radio("🎉 Festival Day?", festival_options, horizontal=True)
             st.divider()
-            is_weekend = st.radio(
-                "Is Weekend?", is_weekend_options, horizontal=True
-            )
+            is_weekend = st.radio("Is Weekend?", is_weekend_options, horizontal=True)
             st.divider()
             time_of_day = st.selectbox("🌇 Time of Day", order_time_of_day_options)
             st.divider()

@@ -11,7 +11,7 @@ import os
 from dotenv import load_dotenv
 # from mlflow import MlflowClient
 from sklearn import set_config
-from scripts.data_cleaning_script import perform_data_cleaning
+# from scripts.data_cleaning_script import perform_data_cleaning
 from fastapi.middleware.cors import CORSMiddleware
 from functools import lru_cache
 

@@ -1,5 +1,7 @@
 # delivery-time-pred
+[try_out]("https://deliverytimeprediction-zrx8yweudjdjhcrcwu3nir.streamlit.app/")
 
+[blog]("https://medium.com/@poudelrabin2004/predicting-online-delivery-time-with-machine-learning-5d92c0c76bcc")
 <!-- <a target="_blank" href="https://cookiecutter-data-science.drivendata.org/">
     <img src="https://img.shields.io/badge/CCDS-Project%20template-328F97?logo=cookiecutter" />
 </a> -->
