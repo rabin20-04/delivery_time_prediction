@@ -4,7 +4,7 @@ from sklearn.pipeline import Pipeline
 import uvicorn
 import pandas as pd
 import numpy as np
-import mlflow
+# import mlflow
 # import json
 import joblib
 import os
@@ -146,7 +146,7 @@ async def perform_prediction(data: Data):
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://deliverytimeprediction-2r2xwb66xapjc4ywf5f3cq.streamlit.app", "https://*.streamlit.app","http://localhost:8501"],
+    allow_origins=["https://deliverytimeprediction-zrx8yweudjdjhcrcwu3nir.streamlit.app", "https://*.streamlit.app","http://localhost:8501"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
