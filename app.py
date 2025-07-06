@@ -102,7 +102,9 @@ model_pipe = load_model_and_preprocessor()
 @app.get(path="/")
 async def home():
     return " Welcome to the Delivery time Precition App"
-
+@app.get("/ping")
+def ping():
+    return {"status": "alive"}
 
 # predict endpoint
 @app.post(path="/predict")

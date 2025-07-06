@@ -1,66 +1,195 @@
 import streamlit as st
 import requests
-import pandas as pd
-from dotenv import load_dotenv
 import os
+import time
+from dotenv import load_dotenv
 
+# Load environment variable
 load_dotenv()
 API_URL = os.getenv("API_URL")
 
-st.title("Delivery Time Prediction")
+# Wake up render
+try:
+    BACKEND_URL = f"{API_URL}/ping"
+    requests.get(BACKEND_URL, timeout=2)
+except:
+    st.text("")
 
-weather_options = ["SUNNY", "CLOUDY","Sandstorms", "FOG",  "STORMY", "WINDY"]
+# Page config
+st.set_page_config(page_title="🚚 Delivery Time Predictor", layout="wide")
+
+city_type_options = ["URBAN", "METROPOLITAN", "SEMI-URBAN"]
+weather_options = ["SUNNY", "CLOUDY", "SANDSTORMS", "FOG", "STORMY", "WINDY"]
 traffic_options = ["LOW", "MEDIUM", "HIGH", "JAM"]
-vehicle_condition_options = [0, 1, 2, 3]
 type_of_order_options = ["SNACK", "MEAL", "DRINKS", "BUFFET"]
 type_of_vehicle_options = ["MOTORCYCLE", "SCOOTER", "ELECTRIC_SCOOTER", "BICYCLE"]
-festival_options = ["NO", "YES"]
-city_type_options = ["URBAN", "METROPOLITAN", "SEMI-URBAN"]
-is_weekend_options = [0, 1]
+festival_options = ["YES", "NO"]
+is_weekend_options = ["0", "1"]
 order_time_of_day_options = ["MORNING", "AFTERNOON", "EVENING", "NIGHT"]
 distance_type_options = ["SHORT", "MEDIUM", "LONG"]
 
-with st.form("prediction_form"):
-    age = st.number_input("Delivery Person Age", min_value=18.0, max_value=60.0, value=30.0, step=1.0)
-    ratings = st.number_input("Delivery Person Ratings", min_value=0.0, max_value=5.0, value=4.0, step=0.1)
-    pickup_time_minutes = st.number_input("Pickup Time (Minutes)", min_value=0.0, max_value=60.0, value=10.0, step=1.0)
-    weather = st.selectbox("Weather", weather_options)
-    traffic = st.selectbox("Traffic Condition", traffic_options)
-    vehicle_condition = st.selectbox("Vehicle Condition", vehicle_condition_options)
-    type_of_order = st.selectbox("Type of Order", type_of_order_options)
-    type_of_vehicle = st.selectbox("Type of Vehicle", type_of_vehicle_options)
-    multiple_deliveries = st.number_input("Multiple Deliveries", min_value=0.0, max_value=5.0, value=1.0, step=1.0)
-    festival = st.selectbox("Festival", festival_options)
-    city_type = st.selectbox("City Type", city_type_options)
-    distance = st.number_input("Distance (km)", min_value=0.0, max_value=100.0, value=5.0, step=0.1)
-    is_weekend = st.selectbox("Is Weekend", is_weekend_options)
-    order_time_of_day = st.selectbox("Order Time of Day", order_time_of_day_options)
-    distance_type = st.selectbox("Distance Type", distance_type_options)
+# Sidebar navigation
+page = st.sidebar.radio("", ["Description", "Prediction"], index=1)
 
-    submitted = st.form_submit_button("Predict Delivery Time")
+# DESCRIPTION PAGE
+if page == "Description":
+    st.title("📦 Delivery Time Prediction App")
+    st.markdown("#### Powered by Streamlit & FastAPI")
+    st.markdown(
+        """
+        In today’s fast-moving world, where online shopping and food deliveries are part of daily life, knowing **exactly when** your order will arrive is a game-changer. My project, the **Delivery Time Prediction App**, makes this happen by giving you accurate delivery time estimates with a simple, user-friendly interface. After experimenting with different approaches, I’ve built a tool that delivers reliable predictions to make life easier for everyone involved.
 
-if submitted:
-    data = {
-        "age": age,
-        "ratings": ratings,
-        "pickup_time_minutes": pickup_time_minutes,
-        "weather": weather.lower(),
-        "traffic": traffic.lower(),
-        "vehicle_condition": vehicle_condition,
-        "type_of_order": type_of_order.lower(),
-        "type_of_vehicle": type_of_vehicle.lower(),
-        "multiple_deliveries": multiple_deliveries,
-        "festival": festival.lower(),
-        "city_type": city_type.lower(),
-        "distance": distance,
-        "is_weekend": is_weekend,
-        "order_time_of_day": order_time_of_day.lower(),
-        "distance_type": distance_type.lower()
-    }
-    try:
-        response = requests.post(f"{API_URL}/predict", json=data, timeout=30)
-        response.raise_for_status()  # Raise exception for bad status codes
-        prediction = response.json()
-        st.success(f"Predicted Delivery Time: {prediction:.2f} minutes")
-    except requests.exceptions.RequestException as e:
-        st.error(f"Failed to connect to the API: {e}. The backend may be starting up.")
+        ---
+
+        ### Why I Built This
+        Accurate delivery times matter to everyone:
+        - **Customers:** Plan your day without the stress of wondering when your order will show up—whether it’s a quick snack or a big meal.
+        - **Riders:** Save time by choosing the best routes, with predictions that consider real-world factors like traffic or weather.
+        - **Businesses:** Keep customers happy, reduce complaints, and run smoother operations with dependable ETAs.
+
+
+        ---
+
+        ### How It Works
+        This app is powered with advanced machine learning models, carefully chosen after testing different approaches to ensure decent accuracy:
+
+        1. **Core Models:**
+           - **Random Forest:** Spots patterns in complex delivery data to make solid predictions.
+           - **LightGBM:** Delivers fast and accurate results, even with tricky conditions.
+
+        2. **Final Touch:**
+           - **Linear Regression:** Combines the strengths of both models for a precise, polished prediction.
+
+        These models work together in a **stacking regressor**, a method I chose after experimenting to balance speed and accuracy then Linear Regression as meta model. The result? Predictions you can count on, accurate within ±3 minutes.
+
+       ---
+
+       
+         **Thank you for checking out this project.**  
+        Feel free to explore the prediction page and see how everything works in action.  
+        **Suggestions are always appreciated!**
+        """
+    )
+
+# PREDICTION PAGE
+else:
+    # Main form
+    with st.form(key="prediction_form"):
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            age = st.number_input(
+                "Delivery Person Age", min_value=10, max_value=60, value=25
+            )
+            st.divider()
+            ratings = st.slider(
+                "⭐ Delivery Person Ratings",
+                min_value=0.0,
+                max_value=5.0,
+                value=4.0,
+                step=0.1,
+            )
+            st.divider()
+            pickup_time = st.number_input(
+                "⏱️ Pickup Time (minutes)",
+                min_value=0,
+                max_value=60,
+                value=10,
+                help="Time until the delivery person arrives at the restaurant",
+            )
+            st.divider()
+            multiple_deliveries = st.number_input(
+                "📦 Multiple Deliveries", min_value=0, max_value=5, value=0
+            )
+            st.divider()
+
+        with col2:
+            weather = st.selectbox("🌦️ Weather", weather_options)
+            st.divider()
+            traffic = st.selectbox("🚦 Traffic", traffic_options)
+            st.divider()
+            city_type = st.selectbox("City Type", city_type_options)
+            st.divider()
+            vehicle_condition = st.radio(
+                "🚗 Vehicle Condition",
+                ["Excellent (3)", "Good (2)", "Fair (1)", "Poor (0)"],
+                index=0,
+            )
+            st.divider()
+            distance = st.number_input(
+                "📏 Distance (km)", min_value=0.0, max_value=100.0, value=5.0, step=0.1
+            )
+
+        with col3:
+            order_type = st.selectbox("🥘 Type of Order", type_of_order_options)
+            st.divider()
+            vehicle_type = st.selectbox("🛵 Type of Vehicle", type_of_vehicle_options)
+            st.divider()
+            festival = st.radio("🎉 Festival Day?", festival_options, horizontal=True)
+            st.divider()
+            is_weekend = st.radio(
+                "Weekend Delivery?", is_weekend_options, horizontal=True
+            )
+            st.divider()
+            time_of_day = st.selectbox("🌇 Time of Day", order_time_of_day_options)
+            st.divider()
+            distance_type = st.selectbox("Distance Category", distance_type_options)
+            st.divider()
+
+        submit = st.form_submit_button("Predict Delivery Time")
+
+    # Handle submission
+    if submit:
+        # Map selections
+        payload = {
+            "age": age,
+            "ratings": ratings,
+            "pickup_time_minutes": pickup_time,
+            "weather": weather.lower(),
+            "traffic": traffic.lower(),
+            "vehicle_condition": int(vehicle_condition.split()[1].strip("()")),
+            "type_of_order": order_type.lower(),
+            "type_of_vehicle": vehicle_type.lower().replace(" ", "_"),
+            "multiple_deliveries": multiple_deliveries,
+            "festival": festival,
+            "city_type": city_type.lower(),
+            "distance": distance,
+            "is_weekend": int(is_weekend),
+            "order_time_of_day": time_of_day.lower(),
+            "distance_type": distance_type.lower(),
+        }
+
+        # API call
+        with st.spinner("Calculating optimal delivery time..."):
+            try:
+                response = requests.post(f"{API_URL}/predict", json=payload, timeout=30)
+                response.raise_for_status()
+                prediction = response.json()
+                time.sleep(1)  # Simulate processing delay
+            except requests.exceptions.RequestException:
+                st.error(
+                    "Failed to connect to the API. The backend may be starting up."
+                )
+                st.error("Please reload!")
+                prediction = None
+
+        #  display
+        if prediction is not None:
+            display = st.empty()
+            for i in range(0, int(prediction) + 1):
+                display.markdown(
+                    f"<h1 style='text-align:center; color:#FF6F61; font-size:72px;'>{i} <span style='font-size:24px;'>min</span></h1>",
+                    unsafe_allow_html=True,
+                )
+                time.sleep(0.02)
+            display.markdown(
+                f"<h1 style='text-align:center; color:#FF6F61; font-size:72px;'>Total delivery time: {prediction:.2f} <span style='font-size:24px;'>minutes</span></h1>",
+                unsafe_allow_html=True,
+            )
+            st.markdown(
+                f":gray[The total Estimated Delivery Time: {prediction:.2f} ± 3 minutes]"
+            )
+        else:
+            st.error("Failed to get a prediction.")
+
+st.divider()
