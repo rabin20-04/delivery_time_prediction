@@ -1,3 +1,8 @@
+
+
+# to experiment on original raw data
+
+
 from fastapi import FastAPI
 from pydantic import BaseModel
 from sklearn.pipeline import Pipeline
@@ -149,14 +154,6 @@ if __name__ == "__main__":
     uvicorn.run(app="app:app", host="0.0.0.0", port=8000, reload=True)
 
 
-
-
-
-
-
-
-
-
 # ----------------> Running on total raw data as of dataset
 
 from fastapi import FastAPI
@@ -291,15 +288,13 @@ def perform_prediction(data: Data):
     )
 
     # clean the raw input data
-    cleaned_data = perform_data_cleaning(pred_data) # type: ignore
+    cleaned_data = perform_data_cleaning(pred_data)  # type: ignore
     predictions = model_pipe.predict(cleaned_data)[0]
     return predictions
 
 
 if __name__ == "__main__":
     uvicorn.run(app="app:app", host="0.0.0.0", port=8000, reload=True)
-
-
 
 
 # ...............

@@ -4,7 +4,6 @@
     <img src="https://img.shields.io/badge/CCDS-Project%20template-328F97?logo=cookiecutter" />
 </a> -->
 
-
 ### Ml project that predicts food delivery time in minutes
 
 ## Project Organization
@@ -27,7 +26,7 @@
 │                         the creator's initials, and a short `-` delimited description, e.g.
 │                         `1.0-jqp-initial-data-exploration`.
 │
-├── pyproject.toml     <- Project configuration file with package metadata for 
+├── pyproject.toml     <- Project configuration file with package metadata for
 │                         d-time and configuration for tools like black
 │
 ├── references         <- Data dictionaries, manuals, and all other explanatory materials.
@@ -39,8 +38,12 @@
 │                         generated with `pip freeze > requirements.txt`
 │
 ├── setup.cfg          <- Configuration file for flake8
-│
-└── d-time-pred-src   <- Source code for use in this project.
+|
+|
+├── streamlit/               <- Streamlit app files
+│   └── main.py
+|
+└── src   <- Source code for use in this project.
     │
     ├── __init__.py             <- Makes d-time a Python module
     │
@@ -50,13 +53,12 @@
     │
     ├── features.py             <- Code to create features for modeling
     │
-    ├── modeling                
-    │   ├── __init__.py 
-    │   ├── predict.py          <- Code to run model inference with trained models          
+    ├── modeling
+    │   ├── __init__.py
+    │   ├── predict.py          <- Code to run model inference with trained models
     │   └── train.py            <- Code to train models
     │
     └── plots.py                <- Code to create visualizations
 ```
 
---------
-
+---
