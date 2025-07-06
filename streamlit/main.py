@@ -29,10 +29,15 @@ order_time_of_day_options = ["MORNING", "AFTERNOON", "EVENING", "NIGHT"]
 distance_type_options = ["SHORT", "MEDIUM", "LONG"]
 
 page = st.sidebar.radio("", ["Description", "Prediction"], index=1)
-st.divider()
+
 st.title("📦 Delivery Time Prediction App")
 # DESCRIPTION PAGE
 if page == "Description":
+    st.markdown(
+        ':gray[For detailed explanation of this project :] <a href="https://medium.com/@poudelrabin2004/predicting-online-delivery-time-with-machine-learning-5d92c0c76bcc" target="_blank">Blog</a>',
+        unsafe_allow_html=True
+    )
+
     st.markdown("#### Powered by Streamlit & FastAPI")
     st.markdown(
         """
