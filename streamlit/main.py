@@ -24,16 +24,16 @@ traffic_options = ["LOW", "MEDIUM", "HIGH", "JAM"]
 type_of_order_options = ["SNACK", "MEAL", "DRINKS", "BUFFET"]
 type_of_vehicle_options = ["MOTORCYCLE", "SCOOTER", "ELECTRIC_SCOOTER", "BICYCLE"]
 festival_options = ["YES", "NO"]
-is_weekend_options = ["0", "1"]
+is_weekend_options = ["Yes", "No"]
 order_time_of_day_options = ["MORNING", "AFTERNOON", "EVENING", "NIGHT"]
 distance_type_options = ["SHORT", "MEDIUM", "LONG"]
 
 # Sidebar navigation
 page = st.sidebar.radio("", ["Description", "Prediction"], index=1)
 
+st.title("📦 Delivery Time Prediction App")
 # DESCRIPTION PAGE
 if page == "Description":
-    st.title("📦 Delivery Time Prediction App")
     st.markdown("#### Powered by Streamlit & FastAPI")
     st.markdown(
         """
@@ -128,7 +128,7 @@ else:
             festival = st.radio("🎉 Festival Day?", festival_options, horizontal=True)
             st.divider()
             is_weekend = st.radio(
-                "Weekend Delivery?", is_weekend_options, horizontal=True
+                "Is Weekend?", is_weekend_options, horizontal=True
             )
             st.divider()
             time_of_day = st.selectbox("🌇 Time of Day", order_time_of_day_options)
@@ -154,7 +154,7 @@ else:
             "festival": festival,
             "city_type": city_type.lower(),
             "distance": distance,
-            "is_weekend": int(is_weekend),
+            "is_weekend": 1 if is_weekend else 0,
             "order_time_of_day": time_of_day.lower(),
             "distance_type": distance_type.lower(),
         }
