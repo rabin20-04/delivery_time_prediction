@@ -151,33 +151,27 @@ if __name__ == "__main__":
     )
     # force_int_remainder_cols=False,
 
-    # load the train and test data with missing values dropped
     train_df = drop_missing_values(load_data(data_path=train_data_path))
     logger.info("Train data loaded successfully")
     test_df = drop_missing_values(load_data(data_path=test_data_path))
     logger.info("Test data loaded successfully")
 
-    # split  X and y on the train and test data
     X_train, y_train = make_X_and_y(data=train_df, target_column=target_col)
     X_test, y_test = make_X_and_y(data=test_df, target_column=target_col)
     logger.info("Data splitting completed")
 
-    # fit the preprocessor on X_train
     train_preprocessor(preprocessor=preprocessor, data=X_train)
     logger.info("Preprocessor is trained")
 
-    # transform the data
     X_train_trans = perform_transformations(preprocessor=preprocessor, data=X_train)
     logger.info("Train data is transformed")
     X_test_trans = perform_transformations(preprocessor=preprocessor, data=X_test)
     logger.info("Test data is transformed")
 
-    # join back X and y
     train_trans_df = join_X_and_y(X_train_trans, y_train)  # type: ignore
     test_trans_df = join_X_and_y(X_test_trans, y_test)  # type: ignore
     logger.info("Datasets joined")
 
-    # save the transformed data
     data_subsets = [train_trans_df, test_trans_df]
     data_paths = [save_train_trans_path, save_test_trans_path]
     filename_list = [train_trans_filename, test_trans_filename]
@@ -188,7 +182,7 @@ if __name__ == "__main__":
     transformer_filename = "preprocessor.joblib"
     transformer_save_dir = root_path / "models"
     transformer_save_dir.mkdir(exist_ok=True)
-    # save the transformer
+
     save_transformer(
         transformer=preprocessor,
         save_dir=transformer_save_dir,

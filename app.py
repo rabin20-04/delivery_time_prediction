@@ -4,18 +4,21 @@ from sklearn.pipeline import Pipeline
 import uvicorn
 import pandas as pd
 import numpy as np
+
 # import mlflow
 # import json
 import joblib
 import os
 from dotenv import load_dotenv
+load_dotenv()
+STREAMLIT_API_URL = os.getenv("STREAMLIT_API_URL")
 # from mlflow import MlflowClient
 from sklearn import set_config
+
 # from scripts.data_cleaning_script import perform_data_cleaning
 from fastapi.middleware.cors import CORSMiddleware
 from functools import lru_cache
 
-load_dotenv()
 set_config(transform_output="pandas")
 
 # import dagshub
@@ -28,17 +31,8 @@ set_config(transform_output="pandas")
 
 
 class Data(BaseModel):
-    # # ID: str
-    # # Delivery_person_ID: str
     age: float
     ratings: float
-    # # Restaurant_latitude: float
-    # # Restaurant_longitude: float
-    # # Delivery_location_latitude: float
-    # # Delivery_location_longitude: float
-    # # Order_Date: str
-    # Time_Orderd: str
-    # # Time_Order_picked: str
     pickup_time_minutes: float
     weather: str
     traffic: str
@@ -81,18 +75,20 @@ nominal_cat_cols = [
 ordinal_cat_cols = ["traffic", "distance_type"]
 
 
-
 @lru_cache(maxsize=1)
 def load_model_and_preprocessor():
     try:
         model = joblib.load("models/model.joblib")
         preprocessor = joblib.load("models/preprocessor.joblib")
-        model_pipe = Pipeline(steps=[("preprocess", preprocessor), ("regressor", model)])
+        model_pipe = Pipeline(
+            steps=[("preprocess", preprocessor), ("regressor", model)]
+        )
         print("Loaded latest local model and preprocessor")
         return model_pipe
     except Exception as e:
         print(f"Error loading model: {e}")
         raise
+
 
 app = FastAPI()
 
@@ -102,27 +98,21 @@ model_pipe = load_model_and_preprocessor()
 @app.get(path="/")
 async def home():
     return " Welcome to the Delivery time Precition App"
+
+
 @app.get("/ping")
 def ping():
     return {"status": "alive"}
+
 
 # predict endpoint
 @app.post(path="/predict")
 async def perform_prediction(data: Data):
     pred_data = pd.DataFrame(
         {
-            # "ID": data.ID,
-            # "Delivery_person_ID": data.Delivery_person_ID,
             "age": data.age,
             "ratings": data.ratings,
-            # "Restaurant_latitude": data.Restaurant_latitude,
-            # "Restaurant_longitude": data.Restaurant_longitude,
-            # "Delivery_location_latitude": data.Delivery_location_latitude,
-            # "Delivery_location_longitude": data.Delivery_location_longitude,
             "pickup_time_minutes": data.pickup_time_minutes,
-            # "Order_Date": data.Order_Date,
-            # "Time_Orderd": data.Time_Orderd,
-            # "Time_Order_picked": data.Time_Order_picked,
             "weather": data.weather,
             "traffic": data.traffic,
             "vehicle_condition": data.vehicle_condition,
@@ -139,16 +129,18 @@ async def perform_prediction(data: Data):
         index=[0],
     )
 
-    # clean the raw input data
-    # cleaned_data = perform_data_cleaning(pred_data)  # type: ignore
+    # cleaned_data = perform_data_cleaning(pred_data)  
     predictions = model_pipe.predict(pred_data)[0]
     return predictions
 
 
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://deliverytimeprediction-zrx8yweudjdjhcrcwu3nir.streamlit.app", "https://*.streamlit.app","http://localhost:8501"],
+    allow_origins=[
+        f"{STREAMLIT_API_URL}",
+        "https://*.streamlit.app",
+        "http://localhost:8501",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -160,5 +152,4 @@ if __name__ == "__main__":
         app="app:app",
         host="0.0.0.0",
         port=int(os.getenv("PORT", 8000)),
-      
     )

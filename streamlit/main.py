@@ -7,11 +7,11 @@ from dotenv import load_dotenv
 # Load environment variable
 load_dotenv()
 API_URL = os.getenv("API_URL")
-
+log_messages = []
 # Wake up render
 try:
     BACKEND_URL = f"{API_URL}/ping"
-    requests.get(BACKEND_URL, timeout=2)
+    requests.get(BACKEND_URL, timeout=10)
 except:
     st.text("")
 
@@ -152,9 +152,9 @@ else:
 
         submit = st.form_submit_button("Predict Delivery Time")
 
-    # Handle submission
+   
     if submit:
-        # Map selections
+       
         payload = {
             "age": age,
             "ratings": ratings,
@@ -187,7 +187,7 @@ else:
                 st.error("Please reload!")
                 prediction = None
 
-        #  display
+        #  just fun animation display
         if prediction is not None:
             display = st.empty()
             for i in range(0, int(prediction) + 1):
@@ -203,6 +203,8 @@ else:
             st.markdown(
                 f":gray[The total Estimated Delivery Time: {prediction:.2f} ± 3 minutes]"
             )
+            st.divider()
+            st.image("https://res.cloudinary.com/dz4tg6vyg/image/upload/v1751882333/image_mk5iwm.png")
         else:
             st.error("Failed to get a prediction.")
 
