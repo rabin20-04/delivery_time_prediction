@@ -107,7 +107,7 @@ else:
             )
             st.divider()
             pickup_time = st.number_input(
-                "⏱️ Pickup Time (minutes)",
+                " Pickup Time (minutes)",
                 min_value=0,
                 max_value=60,
                 value=10,
@@ -115,37 +115,37 @@ else:
             )
             st.divider()
             multiple_deliveries = st.number_input(
-                "📦 Multiple Deliveries", min_value=0, max_value=5, value=0
+                " Multiple Deliveries", min_value=0, max_value=5, value=0
             )
             st.divider()
 
         with col2:
-            weather = st.selectbox("🌦️ Weather", weather_options)
+            weather = st.selectbox(" Weather", weather_options)
             st.divider()
-            traffic = st.selectbox("🚦 Traffic", traffic_options)
+            traffic = st.selectbox(" Traffic", traffic_options)
             st.divider()
             city_type = st.selectbox("City Type", city_type_options)
             st.divider()
             vehicle_condition = st.radio(
-                "🚗 Vehicle Condition",
+                " Vehicle Condition",
                 ["Excellent (3)", "Good (2)", "Fair (1)", "Poor (0)"],
                 index=0,
             )
             st.divider()
             distance = st.number_input(
-                "📏 Distance (km)", min_value=0.0, max_value=100.0, value=5.0, step=0.1
+                " Distance (km)", min_value=0.0, max_value=100.0, value=5.0, step=0.1
             )
 
         with col3:
-            order_type = st.selectbox("🥘 Type of Order", type_of_order_options)
+            order_type = st.selectbox(" Type of Order", type_of_order_options)
             st.divider()
-            vehicle_type = st.selectbox("🛵 Type of Vehicle", type_of_vehicle_options)
+            vehicle_type = st.selectbox(" Type of Vehicle", type_of_vehicle_options)
             st.divider()
-            festival = st.radio("🎉 Festival Day?", festival_options, horizontal=True)
+            festival = st.radio(" Festival Day?", festival_options, horizontal=True)
             st.divider()
             is_weekend = st.radio("Is Weekend?", is_weekend_options, horizontal=True)
             st.divider()
-            time_of_day = st.selectbox("🌇 Time of Day", order_time_of_day_options)
+            time_of_day = st.selectbox(" Time of Day", order_time_of_day_options)
             st.divider()
             distance_type = st.selectbox("Distance Category", distance_type_options)
             st.divider()
