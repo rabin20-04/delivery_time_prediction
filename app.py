@@ -138,7 +138,6 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         f"{STREAMLIT_API_URL}",
-        "https://*.streamlit.app",
         "http://localhost:8501",
     ],
     allow_credentials=True,
